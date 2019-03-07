@@ -1,5 +1,6 @@
 from socket import *
 import threading
+from datetime import datetime
 
 host = '192.168.1.214'
 port = 9091
@@ -12,10 +13,10 @@ logins = []
 def whosonline(connTemp):
         connTemp.send(str.encode("Online:\n"))
         if logins.__len__() == 0: 
-                connTemp.send(str.encode("None"))
+                connTemp.send(str.encode("None\n"))
         else:
                 for temp in logins:
-                        connTemp.send(str.encode(temp))
+                        connTemp.send(str.encode(temp+'\n'))
 def getConnects():
     i = 0
     while True:
@@ -23,10 +24,17 @@ def getConnects():
         conn.append(connTemp)
         adrr.append(adrrTemp)
         whosonline(connTemp)
-        print(adrrTemp)
-        connTemp.send(str.encode("enter login:\n"))
-        login = bytes.decode(connTemp.recv(1024))
+        connTemp.send(str.encode("enter login:"))
+        while True:
+                login = bytes.decode(connTemp.recv(1024))
+                if checkLogin(login) == True:
+                        break
+                connTemp.send(str.encode('INVALID LOGIN'))
         logins.append(login)
+        print(adrrTemp,login,datetime.now())
+        hasConnected = 'User ' + login + ' has connected'
+        hasConnected = str.encode(hasConnected)
+        sendMessagesToAll(connTemp,hasConnected)
         threads.append(threading.Thread(target=getMessages,args=[connTemp,adrrTemp,login]))
         threads[i].start()
         i+=1
@@ -40,6 +48,8 @@ def getMessages(cur,adr,login):
         while True:
                 data = cur.recv(1024)
                 if not data:
+                        hasDisconected = 'User ' + login + ' has disconnected'
+                        sendMessagesToAll(cur,str.encode(hasDisconected))
                         conn.pop(conn.index(cur))
                         adrr.pop(adrr.index(adr))
                         logins.pop(logins.index(login))
