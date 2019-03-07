@@ -7,16 +7,26 @@ address = (host,port)
 conn =[]
 adrr = []
 threads =[]
+logins = []
 
-
+def whosonline(connTemp):
+        connTemp.send(str.encode("Online:\n"))
+        if logins.__len__() == 0: 
+                connTemp.send(str.encode("None"))
+        else:
+                for temp in logins:
+                        connTemp.send(str.encode(temp))
 def getConnects():
     i = 0
     while True:
         connTemp,adrrTemp = tcp_socket.accept()
         conn.append(connTemp)
         adrr.append(adrrTemp)
+        whosonline(connTemp)
         print(adrrTemp)
+        connTemp.send(str.encode("enter login:\n"))
         login = bytes.decode(connTemp.recv(1024))
+        logins.append(login)
         threads.append(threading.Thread(target=getMessages,args=[connTemp,adrrTemp,login]))
         threads[i].start()
         i+=1
@@ -32,6 +42,7 @@ def getMessages(cur,adr,login):
                 if not data:
                         conn.pop(conn.index(cur))
                         adrr.pop(adrr.index(adr))
+                        logins.pop(logins.index(login))
                         break
                 else:
                         data = bytes.decode(data)
