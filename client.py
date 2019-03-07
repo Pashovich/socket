@@ -2,9 +2,7 @@ from socket import *
 import sys
 import threading
 
-#host = 'pavel.tom.ru'
 host = '78.140.8.143'
-#host = "localhost"
 port = 9091
 addr = (host,port)
 end = False
@@ -32,13 +30,15 @@ def sendMessages():
         else:
             tcp_socket.send(getdata.encode("UTF-8"))
 
-tcp_socket = socket(AF_INET, SOCK_STREAM)
-tcp_socket.connect(addr)
+if __name__ == "__main__":
+    
+    tcp_socket = socket(AF_INET, SOCK_STREAM)
+    tcp_socket.connect(addr)
 
-t1 = threading.Thread(target=getMessages,daemon=False)
-t2 = threading.Thread(target=sendMessages,daemon=False)
-t1.start()
-t2.start()
-t1.join()
-t2.join()
-print('all?')
+    t1 = threading.Thread(target=getMessages,daemon=False)
+    t2 = threading.Thread(target=sendMessages,daemon=False)
+    t1.start()
+    t2.start()
+    t1.join()
+    t2.join()
+    print('all?')
