@@ -2,7 +2,7 @@ from socket import *
 import rsa
 import threading
 #данные сервера
-host = 'localhost'
+host = '192.168.1.214'
 port = 9091
 address = (host,port)
 conn =[]

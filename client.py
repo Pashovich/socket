@@ -3,8 +3,8 @@ import sys
 import threading
 
 #host = 'pavel.tom.ru'
-#host = '78.140.8.143'
-host = "localhost"
+host = '78.140.8.143'
+#host = "localhost"
 port = 9091
 addr = (host,port)
 end = False
