@@ -52,6 +52,7 @@ def getMessages(cur,adr,login):
 
 
 if __name__ == '__main__':
+        print("start")
         tcp_socket = socket(AF_INET, SOCK_STREAM)
         tcp_socket.bind(address)
         tcp_socket.listen()
