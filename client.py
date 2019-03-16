@@ -16,6 +16,7 @@ def getMessages():
             print("CLOSE CONNECTION")
             end = True
             tcp_socket.close()
+            sys.exit()
             break
 def sendMessages():
     login = input()
@@ -28,7 +29,7 @@ def sendMessages():
             end = True
             sys.exit()
         else:
-            tcp_socket.send(getdata.encode("UTF-8"))
+            tcp_socket.send(str.encode(getdata))
 
 if __name__ == "__main__":
     
@@ -41,4 +42,3 @@ if __name__ == "__main__":
     t2.start()
     t1.join()
     t2.join()
-    print('all?')
