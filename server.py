@@ -24,18 +24,7 @@ def getConnects():
         conn.append(connTemp)
         adrr.append(adrrTemp)
         whosonline(connTemp)
-        connTemp.send(str.encode("enter login:"))
-        while True:
-                login = bytes.decode(connTemp.recv(1024))
-                if checkLogin(login) == True:
-                        break
-                connTemp.send(str.encode('INVALID LOGIN'))
-        logins.append(login)
-        print(adrrTemp,login,datetime.now())
-        hasConnected = 'User ' + login + ' has connected'
-        hasConnected = str.encode(hasConnected)
-        sendMessagesToAll(connTemp,hasConnected)
-        threads.append(threading.Thread(target=getMessages,args=[connTemp,adrrTemp,login]))
+        threads.append(threading.Thread(target=getMessages,args=[connTemp,adrrTemp]))
         threads[i].start()
         i+=1
         
@@ -44,22 +33,40 @@ def sendMessagesToAll(cur,tempmes):
                 if temp != cur:
                         temp.send(tempmes)
             
-def getMessages(cur,adr,login):
+def getLogin(connTemp):
+        connTemp.send(str.encode("enter login:"))
         while True:
-                data = cur.recv(1024)
-                if not data:
-                        hasDisconected = 'User ' + login + ' has disconnected'
-                        sendMessagesToAll(cur,str.encode(hasDisconected))
-                        conn.pop(conn.index(cur))
-                        adrr.pop(adrr.index(adr))
-                        logins.pop(logins.index(login))
+                tempData = connTemp.recv(1024)
+                if not tempData:
+                        return False
+                login = bytes.decode(tempData)
+                if checkLogin(login) == True:
                         break
-                else:
-                        data = bytes.decode(data)
-                        message_ = '\n' + login+' :' + data 
-                        message_ = str.encode(message_)
-                        sendMessagesToAll(cur,message_)
+                connTemp.send(str.encode('INVALID LOGIN'))
+        logins.append(login)
+        hasConnected = 'User ' + login + ' has connected'
+        hasConnected = str.encode(hasConnected)
+        sendMessagesToAll(connTemp,hasConnected)
+        return login
 
+def getMessages(cur,adr):
+        login = getLogin(cur)
+        if login != False:
+                print(cur,login,datetime.now())
+                while True:
+                        data = cur.recv(1024)
+                        if not data:
+                                hasDisconected = 'User ' + login + ' has disconnected'
+                                sendMessagesToAll(cur,str.encode(hasDisconected))
+                                conn.pop(conn.index(cur))
+                                adrr.pop(adrr.index(adr))
+                                logins.pop(logins.index(login))
+                                break
+                        else:
+                                data = bytes.decode(data)
+                                message_ = '\n' + login+' :' + data 
+                                message_ = str.encode(message_)
+                                sendMessagesToAll(cur,message_)
 
 if __name__ == '__main__':
         print("start")
