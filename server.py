@@ -32,7 +32,13 @@ def sendMessagesToAll(cur,tempmes):
         for temp in conn:
                 if temp != cur:
                         temp.send(tempmes)
-            
+
+
+def checkLogin(login):
+        for temp in logins:
+                if login ==temp:
+                        return False
+        return True
 def getLogin(connTemp):
         connTemp.send(str.encode("enter login:"))
         while True:
@@ -52,7 +58,7 @@ def getLogin(connTemp):
 def getMessages(cur,adr):
         login = getLogin(cur)
         if login != False:
-                print(cur,login,datetime.now())
+                print(adr,login,datetime.now())
                 while True:
                         data = cur.recv(1024)
                         if not data:
@@ -77,6 +83,7 @@ if __name__ == '__main__':
         t1 = threading.Thread(target=getConnects)
         t1.start()
         t1.join()
+        print('end')
 
 
 
